@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Kartu Ujian Enterprise v7.3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <style>
+        :root {
+            --kelas-x: #2563eb; 
+            --kelas-xi: #d97706; 
+            --kelas-xii: #dc2626; 
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-body: #f1f5f9;
+            --card-scale: 1; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-body); padding: 30px 20px; font-size: 14px; color: var(--text-main); }
+
+        .app-container { max-width: 900px; margin: 0 auto 30px auto; }
+        .app-header { text-align: center; margin-bottom: 25px; }
+        .app-header h2 { font-weight: 700; color: #0f172a; letter-spacing: -0.5px; }
+        .app-header p { color: var(--text-muted); font-size: 13px; }
+
+        .step-group { 
+            background: #ffffff; padding: 25px; border-radius: 12px; margin-bottom: 20px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.025);
+            border: 1px solid #e2e8f0;
+        }
+        .step-title { 
+            font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 18px; 
+            display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;
+        }
+        .step-title-left { display: flex; align-items: center; gap: 10px; }
+        .step-badge { 
+            background: #2563eb; color: white; width: 26px; height: 26px; 
+            border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-size: 13px;
+        }
+
+        .ui-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 12px; font-weight: 600; color: #475569; }
+        .input-group input, .input-group select { 
+            padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; 
+            background: #f8fafc; transition: 0.2s; outline: none; width: 100%;
+        }
+        .input-group input[type="range"] { padding: 0; background: transparent; cursor: pointer; }
+        .input-group input:focus, .input-group select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+        .status-box {
+            background: #ecfdf5; border: 1px solid #10b981; color: #047857; 
+            padding: 12px 15px; border-radius: 8px; font-size: 13px; margin-top: 15px;
+            display: flex; align-items: center; justify-content: space-between; display: none;
+        }
+
+        .btn-action { 
+            padding: 12px 24px; color: white; border: none; cursor: pointer; border-radius: 8px; font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-print { background: #0f172a; flex: 1; }
+        .btn-print:hover { background: #1e293b; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15);}
+        .btn-zip { background: #0ea5e9; flex: 1;}
+        .btn-zip:hover { background: #0284c7; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15);}
+        .btn-zip:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-download { background: #10b981; padding: 6px 12px; font-size: 11px; border-radius: 6px; box-shadow: none;}
+        .btn-download:hover { background: #059669; }
+
+        .autosave-notice { font-size: 11px; color: #10b981; display: flex; align-items: center; gap: 4px; font-weight: normal;}
+
+        #card-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; padding-bottom: 50px;}
+
+        .card-wrapper { 
+            page-break-inside: avoid; 
+            width: calc(5.4cm * var(--card-scale));
+            height: calc(8.6cm * var(--card-scale));
+            position: relative;
+        }
+
+        .card {
+            width: 5.4cm; 
+            height: 8.6cm;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            position: absolute; 
+            top: 0; left: 0;
+            overflow: hidden; 
+            padding: 0.25cm; 
+            display: flex; flex-direction: column;
+            color: var(--text-main);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transform: scale(var(--card-scale));
+            transform-origin: top left;
+        }
+
+        .color-accent { position: absolute; top: 0; left: 0; width: 100%; height: 5px; }
+        .theme-x .color-accent { background: var(--kelas-x); }
+        .theme-xi .color-accent { background: var(--kelas-xi); }
+        .theme-xii .color-accent { background: var(--kelas-xii); }
+
+        .watermark { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 60%; opacity: 0.04; z-index: 1; }
+
+        .header {
+            display: flex; align-items: center; justify-content: flex-start; 
+            gap: 4px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4px; margin-bottom: 4px; margin-top: 3px; z-index: 2;
+        }
+        .header img { width: 0.85cm; height: 0.85cm; flex-shrink: 0; object-fit: contain;}
+        .header-text { text-align: center; flex-grow: 1; line-height: 1.1; overflow: hidden;}
+        .header-text h2 { font-size: 4pt; color: var(--text-muted); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;}
+        .header-text h1 { font-size: 5pt; font-weight: 800; color: var(--text-main); text-transform: uppercase; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 1px;}
+        .header-text p { font-size: 3.2pt; color: #475569; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2;}
+        
+        .card-title-group { text-align: center; margin-bottom: 4px; z-index: 2; background: #f8fafc; border-radius: 4px; padding: 3px 0; border: 1px solid #f1f5f9; }
+        .title-main { font-size: 5.5pt; font-weight: 800; color: #0f172a; letter-spacing: 0.5px; line-height: 1.1;}
+        .title-sub { font-size: 4.5pt; font-weight: 600; color: #334155; line-height: 1.1;}
+        .title-year { font-size: 4pt; font-weight: 500; color: var(--text-muted); line-height: 1.1;}
+
+        .visual-area { display: flex; justify-content: center; margin-bottom: 12px; z-index: 2; }
+        
+        /* HANYA BAGIAN INI YANG DIUBAH DARI VERSI 7.1 */
+        .photo-box, .photo-img {
+            width: 1.5cm; height: 2.0cm; /* Dikecilkan dari 1.8cm x 2.4cm */
+            border: 1px solid #cbd5e1; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; font-size: 4.5pt; color: #9ca3af; flex-shrink: 0; background: #f8fafc; padding: 2px; text-align: center;
+        }
+        .photo-img { object-fit: cover; object-position: center top; }
+
+        .biodata { flex-grow: 1; font-size: 5pt; display: flex; flex-direction: column; gap: 2px; z-index: 2; overflow: hidden; }
+        .data-row { display: grid; grid-template-columns: 0.8cm 0.1cm 1fr; align-items: start; line-height: 1.25; }
+        .data-label { color: var(--text-muted); font-weight: 500; }
+        .data-value { font-weight: 700; text-transform: uppercase; word-wrap: break-word; overflow-wrap: break-word; color: #000; }
+        .row-nama .data-value { font-size: 5.5pt; font-weight: 800; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .auth {
+            display: flex; justify-content: flex-end; align-items: flex-end; font-size: 4pt; z-index: 2; 
+            margin-top: auto; border-top: 1px dashed #cbd5e1; padding-top: 3px; line-height: 1.2;
+        }
+        .auth-box { text-align: center; width: 65%; }
+        .ttd-container { height: 0.7cm; width: 100%; display: flex; justify-content: center; align-items: center; margin: 1px 0; }
+        .ttd-img { max-height: 100%; max-width: 100%; object-fit: contain; mix-blend-mode: multiply; }
+        .auth-name { font-weight: 800; font-size: 4.5pt; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .auth-nip { font-weight: 500; font-size: 3.8pt; color: #334155; margin-top: 1px; } 
+
+        @media print {
+            body { background: white; padding: 0; }
+            .app-container { display: none; } 
+            #card-container { gap: 10px; justify-content: flex-start; }
+            .card { border: 1px solid #64748b; border-radius: 0; box-shadow: none; }
+            @page { margin: 10mm; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="app-header">
+            <h2>⚙️ ID Card Generator Ultimate</h2>
+            <p>Sistem cetak ID Card sisi-klien dengan Auto-Save, Filter Kelas, dan Export Digital.</p>
+        </div>
+
+        <div class="step-group">
+            <div class="step-title">
+                <div class="step-title-left">
+                    <span class="step-badge">1</span> Profil Sekolah & Detail Ujian
+                </div>
+                <div class="autosave-notice">☁️ Auto-Save Aktif</div>
+            </div>
+            <div class="ui-grid">
+                <div class="input-group">
+                    <label>Kop Baris 1 (Dinas/Yayasan)</label>
+                    <input type="text" id="inpKop1" value="Pemerintah Prov. Kepulauan Riau">
+                </div>
+                <div class="input-group">
+                    <label>Kop Baris 2 (Nama Sekolah)</label>
+                    <input type="text" id="inpKop2" value="SMA NEGERI 20 BATAM">
+                </div>
+                <div class="input-group" style="grid-column: span 2;">
+                    <label>Alamat Sekolah</label>
+                    <input type="text" id="inpAlamat" value="Jl. Pendidikan No. 1, Kec. Batam Kota, Kota Batam, Kepulauan Riau 29461">
+                </div>
+                <div class="input-group">
+                    <label>Nama Ujian (Contoh: Penilaian Tengah Semester)</label>
+                    <input type="text" id="inpUjian" value="UJIAN SEMESTER GENAP">
+                </div>
+                <div class="input-group">
+                    <label>Tahun Ajaran</label>
+                    <input type="text" id="inpTahun" value="TA. 2025/2026">
+                </div>
+                <div class="input-group" style="grid-column: span 2;">
+                    <label>Upload Logo Sekolah (.png/.jpg)</label>
+                    <input type="file" id="inpLogo" accept="image/*">
+                </div>
+            </div>
+        </div>
+
+        <div class="step-group">
+            <div class="step-title">
+                <div class="step-title-left">
+                    <span class="step-badge">2</span> Pengesahan (Tanda Tangan)
+                </div>
+            </div>
+            <div class="ui-grid">
+                <div class="input-group">
+                    <label>Tempat TTD</label>
+                    <input type="text" id="inpTempat" value="Batam">
+                </div>
+                <div class="input-group">
+                    <label>Tanggal TTD</label>
+                    <input type="text" id="inpTanggal" value="23 Februari 2026">
+                </div>
+                <div class="input-group">
+                    <label>Nama Panitia / Kepsek</label>
+                    <input type="text" id="inpKepsek" value="Ridwan Juli Fitrianto, S.Pd.">
+                </div>
+                <div class="input-group">
+                    <label>NIP Panitia / Kepsek</label>
+                    <input type="text" id="inpNip" value="NIP. 19800101 200501 1 001">
+                </div>
+                <div class="input-group" style="grid-column: span 2;">
+                    <label>Upload Gambar TTD (.png transparan)</label>
+                    <input type="file" id="inpTtd" accept="image/png, image/jpeg">
+                </div>
+            </div>
+        </div>
+
+        <div class="step-group">
+            <div class="step-title">
+                <div class="step-title-left">
+                    <span class="step-badge">3</span> Upload Data & Filter
+                </div>
+                <button class="btn-action btn-download" onclick="downloadTemplateExcel()">⬇️ Download Template .xlsx</button>
+            </div>
+            
+            <div class="ui-grid">
+                <div class="input-group" style="background: #eff6ff; padding: 15px; border-radius: 8px; border: 1px dashed #3b82f6;">
+                    <label style="color: #1d4ed8;">1. File Data Excel (.xlsx)</label>
+                    <input type="file" id="excelFile" accept=".xlsx, .xls, .csv">
+                </div>
+                <div class="input-group" style="background: #eff6ff; padding: 15px; border-radius: 8px; border: 1px dashed #3b82f6;">
+                    <label style="color: #1d4ed8;">2. Folder Foto (Berdasarkan NISN)</label>
+                    <input type="file" id="photoFolder" webkitdirectory directory multiple>
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 15px;">
+                <label>🔍 Filter Berdasarkan Ruangan Ujian</label>
+                <select id="filterRuang">
+                    <option value="ALL">-- Tampilkan Semua Ruangan --</option>
+                </select>
+            </div>
+
+            <div id="statusBadge" class="status-box">
+                <span id="statusText">✅ 2 Data Siswa (Dummy) Terbaca | 🖼️ 0 Foto Cocok</span>
+            </div>
+        </div>
+
+        <div class="step-group" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+            <div class="step-title">
+                <span class="step-badge" style="background: #10b981;">4</span> Skala, Cetak & Export Digital
+            </div>
+            
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>🔍 Skala Kartu untuk Layar/Print: <span id="scaleValue" style="color: #2563eb;">100%</span></label>
+                <input type="range" id="inpScale" min="0.7" max="1.3" step="0.05" value="1">
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <button class="btn-action btn-print" onclick="window.print()">🖨️ Cetak Kertas (PDF)</button>
+                <button id="btnZip" class="btn-action btn-zip" onclick="exportToZip()">📸 Download Semua ke ZIP (Digital ID)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="card-container"></div>
+
+    <script>
+        // --- 1. FITUR AUTO-SAVE ---
+        const textInputs = ['inpKop1', 'inpKop2', 'inpAlamat', 'inpUjian', 'inpTahun', 'inpTempat', 'inpTanggal', 'inpKepsek', 'inpNip'];
+        
+        textInputs.forEach(id => {
+            const element = document.getElementById(id);
+            const savedValue = localStorage.getItem('idcard_' + id);
+            if(savedValue !== null) {
+                element.value = savedValue;
+            }
+            element.addEventListener('input', function() {
+                localStorage.setItem('idcard_' + id, this.value);
+                renderCards();
+            });
+        });
+
+        let currentData = [
+            { NAMA: "Muhammad Bintang Satria Nusantara Putra Wijaya", NISN: "0012345678", KELAS: "X INFORMATIKA", RUANG: "LAB KOMPUTER 1", MEJA: "01", SESI: "1 (07:30)" },
+            { NAMA: "Siti Aminah", NISN: "0087654321", KELAS: "XI INFORMATIKA", RUANG: "LAB KOMPUTER 2", MEJA: "15", SESI: "2 (10:00)" }
+        ];
+        let globalLogo = "https://via.placeholder.com/80?text=Logo";
+        let globalTtd = ""; 
+        let photoMap = {}; 
+        let currentFilter = "ALL"; 
+
+        const container = document.getElementById('card-container');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusText = document.getElementById('statusText');
+        const filterSelect = document.getElementById('filterRuang');
+
+        document.getElementById('inpScale').addEventListener('input', function(e) {
+            const scale = e.target.value;
+            document.getElementById('scaleValue').innerText = Math.round(scale * 100) + '%';
+            document.documentElement.style.setProperty('--card-scale', scale);
+        });
+
+        function updateFilterDropdown() {
+            const uniqueRuang = [...new Set(currentData.map(item => item.RUANG || "Tanpa Ruang"))];
+            uniqueRuang.sort(); 
+
+            filterSelect.innerHTML = '<option value="ALL">-- Tampilkan Semua Ruangan --</option>';
+            uniqueRuang.forEach(ruang => {
+                filterSelect.innerHTML += `<option value="${ruang}">${ruang}</option>`;
+            });
+            currentFilter = "ALL";
+            filterSelect.value = "ALL";
+        }
+
+        filterSelect.addEventListener('change', function(e) {
+            currentFilter = e.target.value;
+            renderCards(); 
+        });
+
+        function updateStatus(displayedCount) {
+            const total = currentData.length;
+            let matched = 0;
+            currentData.forEach(s => {
+                if(photoMap[String(s.NISN || "").trim()]) matched++;
+            });
+            statusBadge.style.display = 'flex';
+            statusText.innerHTML = `<b>✅ Excel: ${total} Baris</b> &nbsp;|&nbsp; <b>🖼️ ${matched} Foto Cocok</b> &nbsp;|&nbsp; <b>🖨️ Ditampilkan: ${displayedCount} Kartu</b>`;
+        }
+
+        function renderCards() {
+            container.innerHTML = ''; 
+            
+            const kop1 = document.getElementById('inpKop1').value;
+            const kop2 = document.getElementById('inpKop2').value;
+            const alamat = document.getElementById('inpAlamat').value;
+            const namaUjian = document.getElementById('inpUjian').value;
+            const tahunAjar = document.getElementById('inpTahun').value;
+            const ttdTempat = document.getElementById('inpTempat').value;
+            const ttdTanggal = document.getElementById('inpTanggal').value;
+            const kepsek = document.getElementById('inpKepsek').value;
+            const nip = document.getElementById('inpNip').value;
+
+            let filteredData = currentData;
+            if (currentFilter !== "ALL") {
+                filteredData = currentData.filter(s => (s.RUANG || "Tanpa Ruang") === currentFilter);
+            }
+
+            filteredData.forEach((siswa, index) => {
+                let theme = "theme-xii"; 
+                const kelasTeks = (siswa.KELAS || "").toString().toUpperCase();
+                if (kelasTeks.includes(" X ") || kelasTeks.startsWith("X ")) theme = "theme-x"; 
+                if (kelasTeks.includes(" XI ") || kelasTeks.startsWith("XI ")) theme = "theme-xi"; 
+
+                const nisnKey = String(siswa.NISN || "").trim();
+                
+                const photoHTML = photoMap[nisnKey] 
+                    ? `<img src="${photoMap[nisnKey]}" class="photo-img">` 
+                    : `<div class="photo-box">Pasfoto<br>3x4<br><span style="font-size:3pt;">(${nisnKey})</span></div>`;
+
+                const ttdHTML = globalTtd ? `<img src="${globalTtd}" class="ttd-img">` : ``;
+
+                const cardHTML = `
+                    <div class="card-wrapper" id="card-export-${index}">
+                        <div class="card ${theme}">
+                            <div class="color-accent"></div>
+                            <img src="${globalLogo}" alt="Watermark" class="watermark">
+                            
+                            <div class="header">
+                                <img src="${globalLogo}" alt="Logo">
+                                <div class="header-text">
+                                    <h2>${kop1}</h2>
+                                    <h1>${kop2}</h1>
+                                    <p>${alamat}</p>
+                                </div>
+                            </div>
+
+                            <div class="card-title-group">
+                                <div class="title-main">KARTU PESERTA UJIAN</div>
+                                <div class="title-sub">${namaUjian}</div>
+                                <div class="title-year">${tahunAjar}</div>
+                            </div>
+
+                            <div class="visual-area">
+                                ${photoHTML}
+                            </div>
+
+                            <div class="biodata">
+                                <div class="data-row row-nama"><span class="data-label">Nama</span><span>:</span><span class="data-value">${siswa.NAMA || "-"}</span></div>
+                                <div class="data-row"><span class="data-label">NISN</span><span>:</span><span class="data-value">${siswa.NISN || "-"}</span></div>
+                                <div class="data-row"><span class="data-label">Kls</span><span>:</span><span class="data-value">${siswa.KELAS || "-"}</span></div>
+                                <div class="data-row"><span class="data-label">Rng</span><span>:</span><span class="data-value">${siswa.RUANG || "-"}</span></div>
+                                <div class="data-row"><span class="data-label">Meja</span><span>:</span><span class="data-value">${siswa.MEJA || "-"}</span></div>
+                                <div class="data-row"><span class="data-label">Sesi</span><span>:</span><span class="data-value">${siswa.SESI || "-"}</span></div>
+                            </div>
+
+                            <div class="auth">
+                                <div class="auth-box">
+                                    ${ttdTempat}, ${ttdTanggal}<br>
+                                    Kepala Sekolah,
+                                    <div class="ttd-container">
+                                        ${ttdHTML}
+                                    </div>
+                                    <div class="auth-name">${kepsek}</div>
+                                    <div class="auth-nip">${nip}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+            updateStatus(filteredData.length);
+        }
+
+        async function exportToZip() {
+            const btn = document.getElementById('btnZip');
+            const originalText = btn.innerHTML;
+            
+            const wrappers = document.querySelectorAll('.card-wrapper');
+            if (wrappers.length > 100) {
+                const proceed = confirm(`Peringatan: Anda akan mengekstrak ${wrappers.length} gambar sekaligus. Ini bisa memakan waktu 1-2 menit. Disarankan menggunakan Filter Ruangan untuk mengekstrak per-ruang. Lanjutkan?`);
+                if (!proceed) return;
+            }
+
+            btn.innerHTML = '⏳ Sedang Memotret Kartu... (Jangan Tutup Layar)';
+            btn.disabled = true;
+
+            const scaleInput = document.getElementById('inpScale');
+            const originalScale = scaleInput.value;
+            document.documentElement.style.setProperty('--card-scale', 1);
+
+            const zip = new JSZip();
+            
+            for(let i = 0; i < wrappers.length; i++) {
+                const wrapper = wrappers[i];
+                const card = wrapper.querySelector('.card');
+                
+                const namaEl = card.querySelector('.row-nama .data-value');
+                const nisnEl = card.querySelectorAll('.data-row')[1].querySelector('.data-value'); 
+                
+                const nisn = nisnEl ? nisnEl.innerText : `Kartu`;
+                const namaRaw = namaEl ? namaEl.innerText : `Siswa_${i}`;
+                const namaAman = namaRaw.replace(/[\\/:*?"<>|]/g, '').substring(0, 15); 
+                const filename = `${nisn} - ${namaAman}.png`;
+
+                const canvas = await html2canvas(card, {
+                    scale: 3, 
+                    backgroundColor: "#ffffff",
+                    useCORS: true 
+                });
+                
+                const imgData = canvas.toDataURL("image/png").split(',')[1];
+                zip.file(filename, imgData, {base64: true});
+            }
+
+            btn.innerHTML = '📦 Membungkus File ZIP...';
+            document.documentElement.style.setProperty('--card-scale', originalScale);
+
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                let ruangName = currentFilter === "ALL" ? "Semua_Ruang" : currentFilter.replace(/[\\/:*?"<>| ]/g, '_');
+                saveAs(content, `ID_Card_Digital_${ruangName}.zip`);
+                
+                btn.innerHTML = originalText; 
+                btn.disabled = false;
+                alert("✅ Sukses! File ZIP berisi gambar ID Card berhasil diunduh.");
+            });
+        }
+
+        document.getElementById('inpLogo').addEventListener('change', e => {
+            if (e.target.files[0]) { globalLogo = URL.createObjectURL(e.target.files[0]); renderCards(); }
+        });
+
+        document.getElementById('inpTtd').addEventListener('change', e => {
+            if (e.target.files[0]) { globalTtd = URL.createObjectURL(e.target.files[0]); renderCards(); }
+        });
+
+        document.getElementById('photoFolder').addEventListener('change', e => {
+            const files = e.target.files;
+            photoMap = {}; 
+            for(let i = 0; i < files.length; i++) {
+                if(files[i].type.startsWith('image/')) {
+                    const nameWithoutExt = files[i].name.substring(0, files[i].name.lastIndexOf('.'));
+                    photoMap[nameWithoutExt.trim()] = URL.createObjectURL(files[i]);
+                }
+            }
+            renderCards(); 
+        });
+
+        document.getElementById('excelFile').addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: "" }); 
+                if (jsonData.length > 0) { 
+                    currentData = jsonData; 
+                    updateFilterDropdown(); 
+                    renderCards(); 
+                } else { 
+                    alert("Data Excel kosong/format salah!"); 
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function downloadTemplateExcel() {
+            const templateData = [
+                { NAMA: "Budi Santoso", NISN: "0011223344", KELAS: "X INFORMATIKA", RUANG: "LAB KOMPUTER 1", MEJA: "01", SESI: "1 (07:30)" }
+            ];
+            const worksheet = XLSX.utils.json_to_sheet(templateData);
+            worksheet['!cols'] = [{wch: 25}, {wch: 15}, {wch: 18}, {wch: 18}, {wch: 10}, {wch: 15}];
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Peserta");
+            XLSX.writeFile(workbook, "Template_Peserta_Ujian.xlsx");
+        }
+
+        updateFilterDropdown();
+        renderCards();
+    </script>
+</body>
+</html>
