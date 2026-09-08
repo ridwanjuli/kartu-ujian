@@ -37,11 +37,11 @@
             background: radial-gradient(circle at top left, #dbeafe 0, transparent 34%), var(--body);
             color: var(--ink);
             font-size: 14px;
-            padding: 24px;
+            padding: 16px 24px;
         }
         button, input, select { font: inherit; }
         button { border: 0; }
-        .app-shell { max-width: 1680px; margin: 0 auto 36px; }
+        .app-shell { width: 100%; max-width: 100%; margin: 0 auto 36px; }
 
         .app-topbar {
             display: flex;
@@ -153,8 +153,194 @@
         .stat-value { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
         .stat-note { color: var(--muted); font-size: 11px; margin-top: 4px; }
 
-        .layout { display: grid; grid-template-columns: 1fr; gap: 22px; align-items: start; }
-        .control-grid { display: grid; grid-template-columns: repeat(2, minmax(480px, 1fr)); gap: 18px; align-items: start; }
+        .layout { display: block; }
+        
+        /* Stepper Wizard Navigation */
+        .stepper-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 12px 18px;
+            margin-bottom: 22px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+            overflow-x: auto;
+        }
+        .step-indicator {
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            color: var(--muted);
+            font-size: 12px;
+            text-decoration: none;
+        }
+        .step-indicator:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: var(--ink);
+        }
+        .step-indicator.active {
+            background: linear-gradient(135deg, var(--brand), #1d4ed8);
+            border-color: var(--brand);
+            color: white;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+        }
+        .step-indicator.completed {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+        .step-indicator:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+        }
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: white;
+            color: var(--brand);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+            transition: all 0.2s ease;
+        }
+        .step-indicator.active .step-num {
+            background: rgba(255, 255, 255, 0.22);
+            color: white;
+            box-shadow: none;
+        }
+        .step-indicator.completed .step-num {
+            background: #10b981;
+            color: white;
+        }
+        .step-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .step-tag {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.75;
+        }
+        .step-title {
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .step-connector {
+            width: 20px;
+            height: 2px;
+            background: #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        /* Step Panes */
+        .step-pane {
+            display: none;
+            width: 100%;
+            animation: fadeInStep 0.22s ease forwards;
+        }
+        .step-pane.active {
+            display: block;
+        }
+        @keyframes fadeInStep {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Step Box Container for Steps 1, 2, 3 (Full Layar / Area Kerja Penuh) */
+        .step-card-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+        }
+
+        /* Step Action Buttons (Next / Prev) */
+        .step-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .step-actions.right-only {
+            justify-content: flex-end;
+        }
+        .step-actions.between {
+            justify-content: space-between;
+        }
+
+        /* Step 4 Layout: Filter & Aksi Di Atas + Preview Kartu Di Bawah (Full Width) */
+        .step4-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+        .step4-top-panel {
+            width: 100%;
+        }
+        .step4-preview-area {
+            width: 100%;
+        }
+        .toolbar-grid-top {
+            display: grid;
+            grid-template-columns: minmax(260px, 2fr) minmax(180px, 1fr) minmax(160px, 1fr) minmax(200px, 1.2fr);
+            gap: 14px;
+            align-items: flex-end;
+            margin-bottom: 14px;
+        }
+        .toolbar-grid-mid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            align-items: stretch;
+            margin-bottom: 12px;
+        }
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr 1.2fr;
+            gap: 14px;
+            align-items: flex-end;
+        }
+        .toolbar-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding-top: 14px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .toolbar-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .panel {
             background: rgba(255,255,255,0.97);
             border: 1px solid var(--line);
@@ -217,14 +403,14 @@
         .print-note {
             display: flex;
             gap: 10px;
-            align-items: flex-start;
+            align-items: center;
             border: 1px solid #bfdbfe;
             background: #eff6ff;
             border-radius: 16px;
-            padding: 12px;
+            padding: 12px 16px;
             color: #1e3a8a;
             font-size: 12px;
-            line-height: 1.55;
+            line-height: 1.5;
         }
 
         .autosave {
@@ -259,7 +445,11 @@
         }
         .field input[type="range"] { padding: 0; border: 0; box-shadow: none; accent-color: var(--brand); background: transparent; }
 
-        .upload-grid { display: grid; gap: 12px; }
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
         .upload-card {
             border: 1px dashed #93c5fd;
             background: #eff6ff;
@@ -288,7 +478,16 @@
 
         .toolbar { display: grid; gap: 13px; }
         .toolbar-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .status-banner { background: #f8fafc; border: 1px solid var(--line); border-radius: 18px; padding: 14px; color: #334155; line-height: 1.6; }
+        .status-banner {
+            background: #f8fafc;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 12px 16px;
+            color: #334155;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+        }
         .status-banner b { color: var(--ink); }
         .warning-box {
             display: none;
@@ -490,32 +689,56 @@
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+        @media (max-width: 1080px) {
+            .toolbar-grid-top { grid-template-columns: 1fr 1fr; }
+            .toolbar-grid-mid { grid-template-columns: 1fr; }
+        }
         @media (max-width: 980px) {
-            body { padding: 16px; }
+            body { padding: 14px; }
             .app-topbar { align-items: flex-start; flex-direction: column; }
             .topbar-actions { justify-content: flex-start; }
             .hero-content { grid-template-columns: 1fr; }
-            .control-grid { grid-template-columns: 1fr; }
             .quick-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .preview-header { align-items: flex-start; flex-direction: column; }
+            .stepper-nav { padding: 10px 12px; gap: 8px; }
+            .step-indicator { min-width: 130px; padding: 8px 10px; }
+        }
+        @media (max-width: 860px) {
+            .form-row-3 { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .stepper-nav { padding: 8px; gap: 6px; }
+            .step-connector { display: none; }
+            .step-indicator { min-width: auto; padding: 8px 10px; gap: 8px; }
+            .step-tag { display: none; }
+            .step-title { font-size: 11px; }
+            .step-num { width: 26px; height: 26px; font-size: 12px; }
+            .toolbar-grid-top, .toolbar-grid-mid, .form-row-3 { grid-template-columns: 1fr; }
+            .toolbar-actions-row { flex-direction: column; align-items: stretch; }
+            .toolbar-btn-group { flex-direction: column; width: 100%; }
+            .toolbar-btn-group .btn { width: 100%; }
         }
         @media (max-width: 620px) {
-            body { padding: 12px; }
-            .app-topbar { padding: 16px; border-radius: 20px; }
+            body { padding: 10px; }
+            .app-topbar { padding: 14px; border-radius: 18px; }
             .topbar-title { align-items: flex-start; }
             .topbar-actions .btn, .topbar-actions .total-pill { width: 100%; justify-content: center; }
-            .hero { padding: 20px; border-radius: 22px; }
+            .hero { padding: 18px; border-radius: 20px; }
             .quick-stats { grid-template-columns: 1fr; }
-            .form-grid, .toolbar-row { grid-template-columns: 1fr; }
+            .form-grid, .toolbar-row, .upload-grid { grid-template-columns: 1fr; }
             .span-2 { grid-column: span 1; }
             .panel-header { align-items: flex-start; flex-direction: column; }
             #card-container { justify-content: center; }
             .hero-actions .btn { width: 100%; }
+            .step-actions { flex-direction: column; }
+            .step-actions .btn { width: 100%; }
         }
         @media print {
             body { background: white !important; padding: 0 !important; }
-            .app-topbar, .quick-stats, .control-grid, .preview-header, .toast, .progress-box { display: none !important; }
-            .app-shell, .layout, .preview-column {
+            .app-topbar, .stepper-nav, .quick-stats, .step-actions, .step4-top-panel, .preview-header, .toast, .progress-box { display: none !important; }
+            .step-pane { display: none !important; }
+            #step-pane-4 { display: block !important; }
+            .app-shell, .layout, .step4-layout, .step4-preview-area, .preview-column {
                 display: block !important;
                 max-width: none !important;
                 width: 100% !important;
@@ -556,101 +779,188 @@
             </div>
         </section>
 
-        <section class="quick-stats" aria-label="Ringkasan data">
-            <div class="stat-card"><div class="stat-label">Data Excel</div><div id="statTotal" class="stat-value">2</div><div class="stat-note">baris peserta</div></div>
-            <div class="stat-card"><div class="stat-label">Foto Cocok</div><div id="statPhotos" class="stat-value">0</div><div class="stat-note">berdasarkan NISN</div></div>
-            <div class="stat-card"><div class="stat-label">Belum Ada Foto</div><div id="statMissing" class="stat-value">2</div><div class="stat-note">perlu dicek</div></div>
-            <div class="stat-card"><div class="stat-label">Ditampilkan</div><div id="statShown" class="stat-value">2</div><div class="stat-note">kartu di layar</div></div>
-        </section>
+        <!-- Stepper Wizard Navigation Header -->
+        <nav class="stepper-nav" aria-label="Alur Pengisian Kartu Ujian">
+            <button type="button" class="step-indicator active" data-step="1" onclick="goToStep(1)">
+                <span class="step-num">1</span>
+                <span class="step-text">
+                    <span class="step-tag">Tahap 1</span>
+                    <span class="step-title">Profil Kartu</span>
+                </span>
+            </button>
+            <div class="step-connector"></div>
+            <button type="button" class="step-indicator" data-step="2" onclick="goToStep(2)">
+                <span class="step-num">2</span>
+                <span class="step-text">
+                    <span class="step-tag">Tahap 2</span>
+                    <span class="step-title">Tanda Tangan</span>
+                </span>
+            </button>
+            <div class="step-connector"></div>
+            <button type="button" class="step-indicator" data-step="3" onclick="goToStep(3)">
+                <span class="step-num">3</span>
+                <span class="step-text">
+                    <span class="step-tag">Tahap 3</span>
+                    <span class="step-title">Data & Foto</span>
+                </span>
+            </button>
+            <div class="step-connector"></div>
+            <button type="button" class="step-indicator" data-step="4" onclick="goToStep(4)">
+                <span class="step-num">4</span>
+                <span class="step-text">
+                    <span class="step-tag">Tahap 4</span>
+                    <span class="step-title">Filter & Preview</span>
+                </span>
+            </button>
+        </nav>
 
         <section class="layout">
-            <div class="control-grid">
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title"><span class="badge">1</span> Profil Kartu</div>
-                        <div class="autosave">☁️ Auto-save</div>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-grid">
-                            <div class="field"><label for="inpKop1">Kop Baris 1</label><input type="text" id="inpKop1" value="Pemerintah Prov. Kepulauan Riau"></div>
-                            <div class="field"><label for="inpKop2">Nama Sekolah</label><input type="text" id="inpKop2" value="SMA NEGERI 20 BATAM"></div>
-                            <div class="field span-2"><label for="inpAlamat">Alamat Sekolah</label><input type="text" id="inpAlamat" value="Jl. Pendidikan No. 1, Kec. Batam Kota, Kota Batam, Kepulauan Riau 29461"></div>
-                            <div class="field"><label for="inpUjian">Nama Ujian</label><input type="text" id="inpUjian" value="UJIAN SEMESTER GENAP"></div>
-                            <div class="field"><label for="inpTahun">Tahun Ajaran</label><input type="text" id="inpTahun" value="TA. 2025/2026"></div>
-                            <div class="field span-2"><label for="inpLogo">Logo Sekolah</label><input type="file" id="inpLogo" accept="image/*"></div>
+            <!-- Tahap 1: Profil Kartu -->
+            <div class="step-pane active" id="step-pane-1">
+                <div class="step-card-container">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><span class="badge">1</span> Profil Kartu</div>
+                            <div class="autosave">☁️ Auto-save</div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header"><div class="panel-title"><span class="badge">2</span> Tanda Tangan</div></div>
-                    <div class="panel-body">
-                        <div class="form-grid">
-                            <div class="field"><label for="inpTempat">Tempat TTD</label><input type="text" id="inpTempat" value="Batam"></div>
-                            <div class="field"><label for="inpTanggal">Tanggal TTD</label><input type="text" id="inpTanggal" value="23 Februari 2026"></div>
-                            <div class="field"><label for="inpKepsek">Nama Panitia / Kepsek</label><input type="text" id="inpKepsek" value="Ridwan Juli Fitrianto, S.Pd."></div>
-                            <div class="field"><label for="inpNip">NIP Panitia / Kepsek</label><input type="text" id="inpNip" value="NIP. 19800101 200501 1 001"></div>
-                            <div class="field span-2"><label for="inpTtd">Gambar TTD</label><input type="file" id="inpTtd" accept="image/png, image/jpeg"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header"><div class="panel-title"><span class="badge">3</span> Data & Foto</div></div>
-                    <div class="panel-body">
-                        <div class="template-action">
-                            <div>
-                                <strong>Gunakan template Excel yang benar</strong>
-                                <small>Kolom wajib: NAMA, NISN, KELAS, RUANG, MEJA, SESI. KELAS otomatis menjadi Fase E/F/F Lanjutan.</small>
+                        <div class="panel-body">
+                            <div class="section-hint">Atur informasi kop surat, nama sekolah, jenis ujian, tahun ajaran, dan unggah logo resmi sekolah untuk kartu ujian.</div>
+                            <div class="form-grid">
+                                <div class="field"><label for="inpKop1">Kop Baris 1</label><input type="text" id="inpKop1" value="Pemerintah Prov. Kepulauan Riau"></div>
+                                <div class="field"><label for="inpKop2">Nama Sekolah</label><input type="text" id="inpKop2" value="SMA NEGERI 20 BATAM"></div>
+                                <div class="field span-2"><label for="inpAlamat">Alamat Sekolah</label><input type="text" id="inpAlamat" value="Jl. Pendidikan No. 1, Kec. Batam Kota, Kota Batam, Kepulauan Riau 29461"></div>
+                                <div class="form-row-3 span-2">
+                                    <div class="field"><label for="inpUjian">Nama Ujian</label><input type="text" id="inpUjian" value="UJIAN SEMESTER GENAP"></div>
+                                    <div class="field"><label for="inpTahun">Tahun Ajaran</label><input type="text" id="inpTahun" value="TA. 2025/2026"></div>
+                                    <div class="field"><label for="inpLogo">Logo Sekolah</label><input type="file" id="inpLogo" accept="image/*"></div>
+                                </div>
                             </div>
-                            <button class="btn btn-success btn-small" type="button" onclick="downloadTemplateExcel()">⬇️ Template</button>
-                        </div>
-                        <div class="upload-grid">
-                            <div class="upload-card"><div class="upload-icon">📄</div><div><label for="excelFile">File Data Excel</label><small id="excelInfo">Format: .xlsx, .xls, atau .csv</small></div><input type="file" id="excelFile" accept=".xlsx,.xls,.csv"></div>
-                            <div class="upload-card"><div class="upload-icon">🖼️</div><div><label for="photoFolder">Folder Foto Siswa</label><small id="photoInfo">Nama file foto sebaiknya sama dengan NISN.</small></div><input type="file" id="photoFolder" webkitdirectory directory multiple></div>
-                        </div>
-                        <div class="warning-box" id="dataWarning"></div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header"><div class="panel-title"><span class="badge">4</span> Filter & Aksi</div></div>
-                    <div class="panel-body toolbar">
-                        <div class="field"><label for="searchBox">Cari Nama / NISN / Kelas / Fase</label><input type="search" id="searchBox" placeholder="Contoh: Siti, Fase E, atau 0012345678"></div>
-                        <div class="toolbar-row">
-                            <div class="field"><label for="filterRuang">Ruangan</label><select id="filterRuang"><option value="ALL">Semua Ruangan</option></select></div>
-                            <div class="field"><label for="renderLimit">Batas Preview</label><select id="renderLimit"><option value="ALL">Semua</option><option value="100">100 kartu</option><option value="200">200 kartu</option><option value="300">300 kartu</option></select></div>
-                        </div>
-                        <div class="field"><label for="inpScale">Skala Kartu: <span id="scaleValue">100%</span></label><input type="range" id="inpScale" min="0.7" max="1.3" step="0.05" value="1"></div>
-                        <div class="status-banner" id="statusText">✅ Siap digunakan. Upload Excel untuk mulai.</div>
-                        <div class="print-note"><span>ℹ️</span><span>PDF akan mencetak kartu yang sedang tampil di preview. Jika ingin semua peserta, ubah Batas Preview menjadi <b>Semua</b> atau cetak per ruangan.</span></div>
-                        <button class="btn btn-danger-soft btn-small" type="button" onclick="showMissingPhotos()">🔎 Lihat NISN yang belum ada foto</button>
-                        <div class="toolbar-row">
-                            <button class="btn btn-dark" onclick="printCards()">🖨️ Cetak / PDF</button>
-                            <button id="btnZip" class="btn btn-primary" onclick="exportToZip()">📦 Export ZIP</button>
-                        </div>
-                        <div class="progress-box" id="progressBox">
-                            <div class="progress-top"><span id="progressLabel">Menyiapkan export...</span><span id="progressPercent">0%</span></div>
-                            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                            <div class="step-actions right-only">
+                                <button type="button" class="btn btn-primary" onclick="goToStep(2)">Lanjut ke Tahap 2: Tanda Tangan ➡️</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <section class="preview-column" aria-label="Preview kartu">
-                <div class="preview-header">
-                    <div class="preview-title">
-                        <h2>Preview Kartu</h2>
-                        <p>Preview mengikuti filter, pencarian, dan batas jumlah kartu yang dipilih.</p>
-                    </div>
-                    <div class="legend" aria-label="Legenda warna fase kurikulum merdeka">
-                        <span class="legend-pill"><span class="dot dot-x"></span> Fase E <small>Kelas X</small></span>
-                        <span class="legend-pill"><span class="dot dot-xi"></span> Fase F <small>Kelas XI</small></span>
-                        <span class="legend-pill"><span class="dot dot-xii"></span> Fase F Lanjutan <small>Kelas XII</small></span>
+            <!-- Tahap 2: Tanda Tangan -->
+            <div class="step-pane" id="step-pane-2">
+                <div class="step-card-container">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><span class="badge">2</span> Tanda Tangan</div>
+                            <div class="autosave">☁️ Auto-save</div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="section-hint">Atur tempat, tanggal, nama penandatangan (Kepala Sekolah / Panitia Ujian), NIP, dan unggah gambar tanda tangan.</div>
+                            <div class="form-grid">
+                                <div class="field"><label for="inpTempat">Tempat TTD</label><input type="text" id="inpTempat" value="Batam"></div>
+                                <div class="field"><label for="inpTanggal">Tanggal TTD</label><input type="text" id="inpTanggal" value="23 Februari 2026"></div>
+                                <div class="form-row-3 span-2">
+                                    <div class="field"><label for="inpKepsek">Nama Panitia / Kepsek</label><input type="text" id="inpKepsek" value="Ridwan Juli Fitrianto, S.Pd."></div>
+                                    <div class="field"><label for="inpNip">NIP Panitia / Kepsek</label><input type="text" id="inpNip" value="NIP. 19800101 200501 1 001"></div>
+                                    <div class="field"><label for="inpTtd">Gambar TTD (Disarankan PNG Transparan)</label><input type="file" id="inpTtd" accept="image/png, image/jpeg"></div>
+                                </div>
+                            </div>
+                            <div class="step-actions between">
+                                <button type="button" class="btn btn-soft" onclick="goToStep(1)">⬅️ Kembali ke Profil</button>
+                                <button type="button" class="btn btn-primary" onclick="goToStep(3)">Lanjut ke Tahap 3: Data & Foto ➡️</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div id="card-container"></div>
-            </section>
+            </div>
+
+            <!-- Tahap 3: Data & Foto -->
+            <div class="step-pane" id="step-pane-3">
+                <div class="step-card-container">
+                    <section class="quick-stats" style="margin-bottom: 18px;" aria-label="Ringkasan data tahap 3">
+                        <div class="stat-card"><div class="stat-label">Data Excel</div><div id="statTotalStep3" class="stat-value">2</div><div class="stat-note">baris peserta</div></div>
+                        <div class="stat-card"><div class="stat-label">Foto Cocok</div><div id="statPhotosStep3" class="stat-value">0</div><div class="stat-note">berdasarkan NISN</div></div>
+                        <div class="stat-card"><div class="stat-label">Belum Ada Foto</div><div id="statMissingStep3" class="stat-value">2</div><div class="stat-note">perlu dicek</div></div>
+                        <div class="stat-card"><div class="stat-label">Total Peserta</div><div id="statTotalBadgeStep3" class="stat-value">2</div><div class="stat-note">tercatat</div></div>
+                    </section>
+
+                    <div class="panel">
+                        <div class="panel-header"><div class="panel-title"><span class="badge">3</span> Data & Foto Siswa</div></div>
+                        <div class="panel-body">
+                            <div class="template-action">
+                                <div>
+                                    <strong>Gunakan template Excel yang benar</strong>
+                                    <small>Kolom wajib: NAMA, NISN, KELAS, RUANG, MEJA, SESI. KELAS otomatis menjadi Fase E/F/F Lanjutan.</small>
+                                </div>
+                                <button class="btn btn-success btn-small" type="button" onclick="downloadTemplateExcel()">⬇️ Download Template</button>
+                            </div>
+                            <div class="upload-grid">
+                                <div class="upload-card"><div class="upload-icon">📄</div><div><label for="excelFile">File Data Excel</label><small id="excelInfo">Format: .xlsx, .xls, atau .csv</small></div><input type="file" id="excelFile" accept=".xlsx,.xls,.csv"></div>
+                                <div class="upload-card"><div class="upload-icon">🖼️</div><div><label for="photoFolder">Folder Foto Siswa</label><small id="photoInfo">Nama file foto sebaiknya sama dengan NISN.</small></div><input type="file" id="photoFolder" webkitdirectory directory multiple></div>
+                            </div>
+                            <div class="warning-box" id="dataWarningStep3"></div>
+                            <div class="step-actions between">
+                                <button type="button" class="btn btn-soft" onclick="goToStep(2)">⬅️ Kembali ke Tanda Tangan</button>
+                                <button type="button" class="btn btn-primary" onclick="goToStep(4)">Lanjut ke Tahap 4: Filter & Preview ➡️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tahap 4: Filter & Aksi dan Preview Kartu -->
+            <div class="step-pane" id="step-pane-4">
+                <div class="step4-layout">
+                    <!-- Bagian Atas: Filter & Aksi (Full Layar) -->
+                    <section class="step4-top-panel">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title"><span class="badge">4</span> Filter & Aksi</div>
+                            </div>
+                            <div class="panel-body toolbar">
+                                <div class="toolbar-grid-top">
+                                    <div class="field"><label for="searchBox">Cari Nama / NISN / Kelas / Fase</label><input type="search" id="searchBox" placeholder="Contoh: Siti, Fase E, atau 0012345678"></div>
+                                    <div class="field"><label for="filterRuang">Ruangan</label><select id="filterRuang"><option value="ALL">Semua Ruangan</option></select></div>
+                                    <div class="field"><label for="renderLimit">Batas Preview</label><select id="renderLimit"><option value="ALL">Semua</option><option value="100">100 kartu</option><option value="200">200 kartu</option><option value="300">300 kartu</option></select></div>
+                                    <div class="field"><label for="inpScale">Skala Kartu: <span id="scaleValue">100%</span></label><input type="range" id="inpScale" min="0.7" max="1.3" step="0.05" value="1"></div>
+                                </div>
+                                <div class="toolbar-grid-mid">
+                                    <div class="status-banner" id="statusText">✅ Siap digunakan. Upload Excel untuk mulai.</div>
+                                    <div class="print-note"><span>ℹ️</span><span>PDF akan mencetak kartu yang tampil. Ubah Batas Preview ke <b>Semua</b> atau filter per ruangan.</span></div>
+                                </div>
+                                <div class="warning-box" id="dataWarning"></div>
+                                <div class="toolbar-actions-row">
+                                    <button type="button" class="btn btn-soft" onclick="goToStep(3)">⬅️ Kembali ke Data & Foto</button>
+                                    <div class="toolbar-btn-group">
+                                        <button class="btn btn-danger-soft btn-small" type="button" onclick="showMissingPhotos()">🔎 Lihat NISN yang belum ada foto</button>
+                                        <button class="btn btn-dark" type="button" onclick="printCards()">🖨️ Cetak / PDF</button>
+                                        <button id="btnZip" class="btn btn-primary" type="button" onclick="exportToZip()">📦 Export ZIP</button>
+                                    </div>
+                                </div>
+                                <div class="progress-box" id="progressBox">
+                                    <div class="progress-top"><span id="progressLabel">Menyiapkan export...</span><span id="progressPercent">0%</span></div>
+                                    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Bagian Bawah: Preview Kartu (Full Layar) -->
+                    <section class="step4-preview-area">
+                        <section class="preview-column" aria-label="Preview kartu">
+                            <div class="preview-header">
+                                <div class="preview-title">
+                                    <h2>Preview Kartu</h2>
+                                    <p>Preview mengikuti filter, pencarian, dan batas jumlah kartu yang dipilih.</p>
+                                </div>
+                                <div class="legend" aria-label="Legenda warna fase kurikulum merdeka">
+                                    <span class="legend-pill"><span class="dot dot-x"></span> Fase E <small>Kelas X</small></span>
+                                    <span class="legend-pill"><span class="dot dot-xi"></span> Fase F <small>Kelas XI</small></span>
+                                    <span class="legend-pill"><span class="dot dot-xii"></span> Fase F Lanjutan <small>Kelas XII</small></span>
+                                </div>
+                            </div>
+                            <div id="card-container"></div>
+                        </section>
+                    </section>
+                </div>
+            </div>
         </section>
     </main>
 
@@ -684,6 +994,52 @@
         let currentShownData = [];
         let renderTimer = null;
         let toastTimer = null;
+        let currentStep = 1;
+
+        function goToStep(step) {
+            if (step < 1) step = 1;
+            if (step > 4) step = 4;
+            currentStep = step;
+            try {
+                sessionStorage.setItem('idcard_current_step', String(step));
+            } catch (e) {}
+
+            // Update Step Panes
+            document.querySelectorAll('.step-pane').forEach((pane, idx) => {
+                const paneStep = idx + 1;
+                if (paneStep === step) {
+                    pane.classList.add('active');
+                } else {
+                    pane.classList.remove('active');
+                }
+            });
+
+            // Update Stepper Indicators
+            document.querySelectorAll('.step-indicator').forEach((btn) => {
+                const btnStep = Number(btn.getAttribute('data-step'));
+                btn.classList.remove('active', 'completed');
+                if (btnStep === step) {
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-current', 'step');
+                } else if (btnStep < step) {
+                    btn.classList.add('completed');
+                    btn.removeAttribute('aria-current');
+                } else {
+                    btn.removeAttribute('aria-current');
+                }
+            });
+
+            // If entering step 4, ensure cards are rendered
+            if (step === 4) {
+                renderCards();
+            }
+
+            // Smooth scroll to top of wizard navigation
+            const stepperNav = document.querySelector('.stepper-nav');
+            if (stepperNav) {
+                stepperNav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
 
         function debounceRender(delay = 220) {
             clearTimeout(renderTimer);
@@ -789,19 +1145,43 @@
 
         function updateStats(total, matched, shown, filteredCount) {
             const missing = Math.max(total - matched, 0);
-            document.getElementById('heroTotal').innerText = total;
-            document.getElementById('statTotal').innerText = total;
-            document.getElementById('statPhotos').innerText = matched;
-            document.getElementById('statMissing').innerText = missing;
-            document.getElementById('statShown').innerText = shown;
+
+            // Topbar / Hero
+            const heroTotalEl = document.getElementById('heroTotal');
+            if (heroTotalEl) heroTotalEl.innerText = total;
+
+            // Step 4 Stats
+            const statTotalEl = document.getElementById('statTotal');
+            if (statTotalEl) statTotalEl.innerText = total;
+            const statPhotosEl = document.getElementById('statPhotos');
+            if (statPhotosEl) statPhotosEl.innerText = matched;
+            const statMissingEl = document.getElementById('statMissing');
+            if (statMissingEl) statMissingEl.innerText = missing;
+            const statShownEl = document.getElementById('statShown');
+            if (statShownEl) statShownEl.innerText = shown;
+
+            // Step 3 Stats
+            const statTotalStep3El = document.getElementById('statTotalStep3');
+            if (statTotalStep3El) statTotalStep3El.innerText = total;
+            const statPhotosStep3El = document.getElementById('statPhotosStep3');
+            if (statPhotosStep3El) statPhotosStep3El.innerText = matched;
+            const statMissingStep3El = document.getElementById('statMissingStep3');
+            if (statMissingStep3El) statMissingStep3El.innerText = missing;
+            const statTotalBadgeStep3El = document.getElementById('statTotalBadgeStep3');
+            if (statTotalBadgeStep3El) statTotalBadgeStep3El.innerText = total;
+
             const limitedInfo = shown < filteredCount ? ` | ⚠️ Preview dibatasi ${shown} dari ${filteredCount}` : '';
             const ruangInfo = currentFilter === 'ALL' ? 'Semua Ruangan' : currentFilter;
-            statusText.innerHTML = `✅ <b>${total}</b> data Excel | 🖼️ <b>${matched}</b> foto cocok | 🖨️ <b>${shown}</b> kartu tampil | Ruangan: <b>${escapeHTML(ruangInfo)}</b>${limitedInfo}`;
-            if (shown < filteredCount) {
-                warningBox.style.display = 'block';
-                warningBox.innerHTML = 'Preview sedang dibatasi agar browser tetap ringan. Pilih <b>Semua</b> pada Batas Preview jika benar-benar ingin menampilkan semua kartu, atau filter per ruangan sebelum cetak/export.';
-            } else {
-                warningBox.style.display = 'none';
+            if (statusText) {
+                statusText.innerHTML = `✅ <b>${total}</b> data Excel | 🖼️ <b>${matched}</b> foto cocok | 🖨️ <b>${shown}</b> kartu tampil | Ruangan: <b>${escapeHTML(ruangInfo)}</b>${limitedInfo}`;
+            }
+            if (warningBox) {
+                if (shown < filteredCount) {
+                    warningBox.style.display = 'block';
+                    warningBox.innerHTML = 'Preview sedang dibatasi agar browser tetap ringan. Pilih <b>Semua</b> pada Batas Preview jika benar-benar ingin menampilkan semua kartu, atau filter per ruangan sebelum cetak/export.';
+                } else {
+                    warningBox.style.display = 'none';
+                }
             }
         }
 
@@ -931,6 +1311,9 @@
                         showToast(`${currentData.length} data peserta berhasil dimuat.`);
                     }
                     renderCards();
+                    if (currentStep < 3) {
+                        goToStep(3);
+                    }
                 } catch (error) {
                     console.error(error);
                     alert('Gagal membaca file Excel. Coba simpan ulang file sebagai .xlsx lalu upload lagi.');
@@ -1047,6 +1430,13 @@
 
         updateFilterDropdown();
         renderCards();
+
+        const savedStep = parseInt(sessionStorage.getItem('idcard_current_step'), 10);
+        if (savedStep >= 1 && savedStep <= 4) {
+            goToStep(savedStep);
+        } else {
+            goToStep(1);
+        }
     </script>
 </body>
 </html>
